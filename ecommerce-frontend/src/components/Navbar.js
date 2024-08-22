@@ -64,6 +64,7 @@ function Navbar() {
                {user ? (
                   <>
                      <Link to="/profile" className="text-white">Profile</Link>
+                     <Link to="/order-history" className="text-white">Order History</Link> {/* Add this line */}
                      <button onClick={handleLogout} className="text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded">Logout</button>
                   </>
                ) : (
