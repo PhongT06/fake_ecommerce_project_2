@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 function Products() {
    const [products, setProducts] = useState([]);
@@ -156,15 +157,17 @@ function Products() {
             </div>
             <button
                onClick={handlePrev}
-               className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 text-gray-800 font-bold py-2 px-4 rounded-r"
+               className="absolute top-1/2 left-1/4 transform -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               aria-label="Previous product"
             >
-               &lt;
+               <ChevronLeft className="w-8 h-8 text-gray-800" />
             </button>
             <button
                onClick={handleNext}
-               className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 hover:bg-opacity-75 text-gray-800 font-bold py-2 px-4 rounded-l"
+               className="absolute top-1/2 right-1/4 transform -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               aria-label="Next product"
             >
-               &gt;
+               <ChevronRight className="w-8 h-8 text-gray-800" />
             </button>
          </div>
          <div className="flex justify-center mt-4">
