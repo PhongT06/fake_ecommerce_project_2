@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash
 import stripe
 from functools import wraps
+from flask import abort
 
 
 # Load environment variables
@@ -110,6 +111,7 @@ class Order(db.Model):
    status = db.Column(db.String(20), default='pending')
    shipping_address = db.Column(db.String(255), nullable=False)
    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+   status = db.Column(db.String(20), default='pending')
 
 class OrderItem(db.Model):
    id = db.Column(db.Integer, primary_key=True)
@@ -441,7 +443,24 @@ def manage_user_cart():
 
       db.session.commit()
 
-      return jsonify({"message": "Product added to cart"}), 201
+      # Fetch the product details to include in the response
+      product = Product.query.get(product_id)
+      if not product:
+         # If the product is not in our database, fetch it from the FakeStore API
+         response = requests.get(f'https://fakestoreapi.com/products/{product_id}')
+         if response.status_code == 200:
+            product_data = response.json()
+            product_title = product_data['title']
+         else:
+            product_title = f"Product {product_id}"
+      else:
+         product_title = product.title
+
+      return jsonify({
+         "message": f"{product_title} added to cart successfully",
+         "product_id": product_id,
+         "quantity": quantity
+      }), 201
 
    elif request.method == 'PUT':
       data = request.json
@@ -533,30 +552,6 @@ def create_order():
 
    return jsonify({'message': 'Order created successfully', 'order_id': new_order.id}), 201
 
-# @app.route('/api/orders/<int:order_id>', methods=['GET'])
-# @jwt_required()
-# def get_order(order_id):
-#    current_user_id = get_jwt_identity()
-#    order = Order.query.filter_by(id=order_id, user_id=current_user_id).first()
-   
-#    if not order:
-#       return jsonify({'message': 'Order not found'}), 404
-
-#    order_items = OrderItem.query.filter_by(order_id=order.id).all()
-   
-#    return jsonify({
-#       'id': order.id,
-#       'total_amount': order.total_amount,
-#       'status': order.status,
-#       'shipping_address': order.shipping_address,
-#       'created_at': order.created_at,
-#       'items': [{
-#          'product_id': item.product_id,
-#          'quantity': item.quantity,
-#          'price': item.price
-#       } for item in order_items]
-#    }), 200
-
 @app.route('/api/orders/<int:order_id>', methods=['GET'])
 @jwt_required()
 def get_order(order_id):
@@ -581,6 +576,23 @@ def get_order(order_id):
          'title': item.title 
       } for item in order_items]
    }), 200
+
+@app.route('/api/orders/<int:order_id>/cancel', methods=['POST'])
+@jwt_required()
+def cancel_order(order_id):
+   current_user_id = get_jwt_identity()
+   order = Order.query.filter_by(id=order_id, user_id=current_user_id).first()
+   
+   if not order:
+      abort(404, description="Order not found")
+   
+   if order.status not in ['pending', 'processing']:
+      abort(400, description="Order cannot be cancelled")
+   
+   order.status = 'cancelled'
+   db.session.commit()
+   
+   return jsonify({'message': 'Order cancelled successfully'}), 200
 
 #### Admin routes ####
 @app.route('/api/admin/products', methods=['GET', 'POST'])
