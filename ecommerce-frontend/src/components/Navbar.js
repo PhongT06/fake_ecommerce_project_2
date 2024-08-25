@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { Search } from 'lucide-react';
 
 function Navbar() {
    const [user, setUser] = useState(null);
+   const [searchTerm, setSearchTerm] = useState('');
    const navigate = useNavigate();
 
    const fetchUser = async () => {
@@ -45,6 +47,13 @@ function Navbar() {
       navigate('/login');
    };
 
+   const handleSearch = (e) => {
+      e.preventDefault();
+      if (searchTerm.trim()) {
+         navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      }
+   };
+
    return (
       <nav className="bg-gray-800 p-4">
          <div className="container mx-auto flex justify-between items-center">
@@ -54,11 +63,26 @@ function Navbar() {
                <Link to="/cart" className="text-white">Cart</Link>
             </div>
 
-            <div className="flex-grow text-center">
+            <div className="flex items-center space-x-4">
                {user && (
                   <span className="text-white text-lg font-semibold">Welcome, {user.username}</span>
                )}
             </div>
+
+            <form onSubmit={handleSearch} className="flex-grow max-w-md mx-4">
+               <div className="relative">
+                  <input
+                     type="text"
+                     placeholder="Search products..."
+                     value={searchTerm}
+                     onChange={(e) => setSearchTerm(e.target.value)}
+                     className="w-full px-4 py-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  />
+                  <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
+                     <Search className="text-gray-600" />
+                  </button>
+               </div>
+            </form>
 
             <div className="flex items-center space-x-4">
                {user ? (

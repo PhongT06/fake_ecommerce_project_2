@@ -232,6 +232,33 @@ def get_products_in_category(category):
       }
    } for p in products])
 
+##### Search ##########
+
+@app.route('/api/products/search', methods=['GET'])
+def search_products():
+   query = request.args.get('q', '')
+   if not query:
+      return jsonify([])
+
+   # Perform a case-insensitive search on title and description
+   products = Product.query.filter(
+      (Product.title.ilike(f'%{query}%')) | 
+      (Product.description.ilike(f'%{query}%'))
+   ).all()
+
+   return jsonify([{
+      'id': p.id,
+      'title': p.title,
+      'price': p.price,
+      'description': p.description,
+      'category': p.category,
+      'image': p.image,
+      'rating': {
+         'rate': p.rating,
+         'count': p.rating_count
+      }
+   } for p in products])
+
 #### Carts ####
 @app.route('/api/carts', methods=['GET', 'POST'])
 def handle_carts():
