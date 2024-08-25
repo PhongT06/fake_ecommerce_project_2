@@ -5,6 +5,7 @@ from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from sqlalchemy import or_
 from marshmallow import ValidationError, fields
 import requests
 import os
@@ -237,14 +238,26 @@ def get_products_in_category(category):
 @app.route('/api/products/search', methods=['GET'])
 def search_products():
    query = request.args.get('q', '')
-   if not query:
-      return jsonify([])
+   category = request.args.get('category', '')
+   # Start with a base query
+   products_query = Product.query
 
-   # Perform a case-insensitive search on title and description
-   products = Product.query.filter(
-      (Product.title.ilike(f'%{query}%')) | 
-      (Product.description.ilike(f'%{query}%'))
-   ).all()
+   # Add search condition if query is provided
+   if query:
+         products_query = products_query.filter(
+               or_(
+                  Product.title.ilike(f'%{query}%'),
+                  Product.description.ilike(f'%{query}%'),
+                  Product.category.ilike(f'%{query}%')
+               )
+         )
+
+   # Add category filter if category is provided
+   if category and category.lower() != query:
+      products_query = products_query.filter(Product.category == category)
+
+   # Execute the query
+   products = products_query.all()
 
    return jsonify([{
       'id': p.id,
@@ -258,6 +271,11 @@ def search_products():
          'count': p.rating_count
       }
    } for p in products])
+
+@app.route('/api/all-categories', methods=['GET'])
+def get_all_categories():
+   categories = db.session.query(Product.category).distinct().all()
+   return jsonify([category[0] for category in categories])
 
 #### Carts ####
 @app.route('/api/carts', methods=['GET', 'POST'])

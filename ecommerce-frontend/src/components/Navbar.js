@@ -6,7 +6,14 @@ import { Search } from 'lucide-react';
 function Navbar() {
    const [user, setUser] = useState(null);
    const [searchTerm, setSearchTerm] = useState('');
+   const [categories, setCategories] = useState([]);
+   const [selectedCategory, setSelectedCategory] = useState('');
    const navigate = useNavigate();
+
+   useEffect(() => {
+      fetchUser();
+      fetchCategories();
+   }, []);
 
    const fetchUser = async () => {
       const token = localStorage.getItem('token');
@@ -21,6 +28,15 @@ function Navbar() {
          }
       } else {
          setUser(null);
+      }
+   };
+
+   const fetchCategories = async () => {
+      try {
+         const response = await api.get('/all-categories');
+         setCategories(response.data);
+      } catch (err) {
+         console.error('Error fetching categories:', err);
       }
    };
 
@@ -50,7 +66,7 @@ function Navbar() {
    const handleSearch = (e) => {
       e.preventDefault();
       if (searchTerm.trim()) {
-         navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+         navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}&category=${encodeURIComponent(selectedCategory)}`);
       }
    };
 
@@ -70,16 +86,16 @@ function Navbar() {
             </div>
 
             <form onSubmit={handleSearch} className="flex-grow max-w-md mx-4">
-               <div className="relative">
+               <div className="flex">
                   <input
                      type="text"
                      placeholder="Search products..."
                      value={searchTerm}
                      onChange={(e) => setSearchTerm(e.target.value)}
-                     className="w-full px-4 py-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                     className="w-full px-4 py-2 rounded-r-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
-                  <button type="submit" className="absolute right-0 top-0 mt-2 mr-4">
-                     <Search className="text-gray-600" />
+                  <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-r-full hover:bg-blue-600">
+                     <Search className="inline-block" />
                   </button>
                </div>
             </form>
