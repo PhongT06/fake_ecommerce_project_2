@@ -1,28 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
+
 
 function Login() {
    const [username, setUsername] = useState('');
    const [password, setPassword] = useState('');
    const [error, setError] = useState('');
+   const [successMessage, setSuccessMessage] = useState('');
    const navigate = useNavigate();
+   const { login, updateUser } = useAuth();
 
    const handleSubmit = async (e) => {
       e.preventDefault();
       setError('');
       try {
-         const response = await api.post('/auth/login', { username, password });
-         localStorage.setItem('token', response.data.token);
-         // Trigger localStorage event
-         window.dispatchEvent(new Event('storage'));
-         if (response.data.role === 'admin') {
-            navigate('/admin');
-         } else {
+         const success = await login(username, password);
+         if (success) {
+            const response = await api.get('/user/profile');
+            updateUser(response.data);
             navigate('/');
+         } else {
+            setError('Invalid username or password');
          }
       } catch (err) {
-         setError('Invalid username or password');
+         setError('An error occurred. Please try again.');
       }
    };
 
@@ -35,6 +38,7 @@ function Login() {
          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+               {successMessage && <p className="text-green-500 mb-4 text-center">{successMessage}</p>}
                <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                      <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>

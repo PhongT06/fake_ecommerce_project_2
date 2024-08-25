@@ -344,7 +344,16 @@ def get_user_profile():
    user = User.query.get(current_user_id)
    if not user:
       return jsonify({"message": "User not found"}), 404
-   return jsonify(user_schema.dump(user)), 200
+   return jsonify({
+      "id": user.id,
+      "username": user.username,
+      "email": user.email,
+      "role": user.role,
+      "firstname": user.firstname,
+      "lastname": user.lastname,
+      "address": user.address,
+      "phone": user.phone
+   }), 200
 
 @app.route('/api/user/profile', methods=['PUT'])
 @jwt_required()
@@ -414,39 +423,50 @@ def login():
    user = User.query.filter_by(username=username).first()
    if user and bcrypt.check_password_hash(user.password, password):
       access_token = create_access_token(identity=user.id)
-      return jsonify({"message": "Login successful", "token": access_token}), 200
+      return jsonify({
+         "message": "Login successful", 
+         "token": access_token,
+         "user": {
+               "id": user.id,
+               "username": user.username,
+               "email": user.email,
+               "role": user.role
+         }
+      }), 200
    
-   # If local authentication fails, try FakeStoreAPI
-   response = make_api_request('auth/login', method='POST', data=data)
-   if 'token' in response:
-      return jsonify({"message": "Login successful", "token": response['token']}), 200
-   else:
-      return jsonify({"message": "Invalid username or password"}), 401
+   return jsonify({"message": "Invalid username or password"}), 401
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
+   data = request.json
+   required_fields = ['username', 'email', 'password']
+   
+   # Check for missing fields
+   missing_fields = [field for field in required_fields if field not in data]
+   if missing_fields:
+      return jsonify({"message": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+
+   # Check if user already exists
+   if User.query.filter((User.username == data['username']) | (User.email == data['email'])).first():
+      return jsonify({"message": "Username or email already exists"}), 400
+   
    try:
-      data = request.json
-      existing_user = User.query.filter((User.username == data['username']) | (User.email == data['email'])).first()
-      if existing_user:
-         return jsonify({"message": "Username or email already exists"}), 400
-      
       hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
       new_user = User(
          username=data['username'],
          email=data['email'],
          password=hashed_password,
          firstname=data.get('firstname'),
-         lastname=data.get('lastname'),
-         address=data.get('address'),
-         phone=data.get('phone')
+         lastname=data.get('lastname')
       )
       db.session.add(new_user)
       db.session.commit()
+      
       access_token = create_access_token(identity=new_user.id)
       return jsonify({"message": "User registered successfully", "token": access_token}), 201
    except Exception as e:
       db.session.rollback()
+      print(f"Registration error: {str(e)}")  # Log the error
       return jsonify({"message": f"Registration failed: {str(e)}"}), 500
 
 
@@ -714,6 +734,22 @@ def admin_orders():
       'created_at': order.created_at
    } for order in orders])
 
+@app.route('/api/admin/orders/<int:order_id>', methods=['PUT'])
+@jwt_required()
+@admin_required
+def update_order_status(order_id):
+   order = Order.query.get_or_404(order_id)
+   data = request.json
+   order.status = data.get('status', order.status)
+   db.session.commit()
+   return jsonify({
+      'id': order.id,
+      'user_id': order.user_id,
+      'total_amount': order.total_amount,
+      'status': order.status,
+      'created_at': order.created_at
+   })
+
 @app.route('/api/admin/users', methods=['GET'])
 @jwt_required()
 @admin_required
@@ -746,6 +782,25 @@ def create_admin_route():
    data = request.json
    result = create_admin_user(data['username'], data['email'], data['password'])
    return jsonify({"message": result})
+
+@app.route('/api/admin/make-admin/<int:user_id>', methods=['POST'])
+@jwt_required()
+@admin_required
+def make_admin(user_id):
+   user = User.query.get_or_404(user_id)
+   user.role = 'admin'
+   db.session.commit()
+   return jsonify({"message": f"User {user.username} is now an admin"}), 200
+
+# Temporary route to make the first user admin (remove in production)
+@app.route('/api/make-first-admin', methods=['POST'])
+def make_first_admin():
+   user = User.query.first()
+   if user:
+      user.role = 'admin'
+      db.session.commit()
+      return jsonify({"message": f"User {user.username} is now an admin"}), 200
+   return jsonify({"message": "No users found"}), 404
 
 #### Create database tables ####
 with app.app_context():

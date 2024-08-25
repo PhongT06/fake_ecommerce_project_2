@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 function Register() {
    const [formData, setFormData] = useState({
@@ -12,7 +13,9 @@ function Register() {
       lastname: '',
    });
    const [error, setError] = useState('');
+   const [successMessage, setSuccessMessage] = useState('');
    const navigate = useNavigate();
+   const { login } = useAuth();
 
    const handleChange = (e) => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,18 +24,30 @@ function Register() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setError('');
-
+      setSuccessMessage('');
+   
       if (formData.password !== formData.confirmPassword) {
          setError("Passwords don't match");
          return;
       }
-
+   
       try {
          const response = await api.post('/auth/register', formData);
-         localStorage.setItem('token', response.data.token);
-         navigate('/');
+         console.log('Registration response:', response.data);
+         
+         setSuccessMessage('Registration successful! Logging you in...');
+         
+         const success = await login(formData.username, formData.password);
+         if (success) {
+            setTimeout(() => {
+               navigate('/');
+            }, 2000);
+         } else {
+            setError('Registration successful, but login failed. Please try logging in.');
+         }
       } catch (err) {
-         setError('Registration failed. Please try again.');
+         console.error('Registration error:', err.response ? err.response.data : err);
+         setError(err.response?.data?.message || 'Registration failed. Please try again.');
       }
    };
 
@@ -45,6 +60,7 @@ function Register() {
          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+               {successMessage && <p className="text-green-500 mb-4 text-center">{successMessage}</p>}
                <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                      <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>

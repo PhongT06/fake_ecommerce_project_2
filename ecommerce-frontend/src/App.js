@@ -18,35 +18,67 @@ import AdminUsers from './pages/AdminUsers';
 import OrderConfirmation from './pages/OrderConfirmation';
 import OrderHistory from './pages/OrderHistory';
 import SearchResults from './pages/SearchResults';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 function App() {
    return (
-      <Elements stripe={stripePromise}>
-         <Router>
-            <div className="App">
-               <Navbar />
-               <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/products/:id" element={<ProductDetails />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/admin/products" element={<AdminProducts />} />
-                  <Route path="/admin/orders" element={<AdminOrders />} />
-                  <Route path="/admin/users" element={<AdminUsers />} />
-                  <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
-                  <Route path="/order-history" element={<OrderHistory />} />
-                  <Route path="/search" element={<SearchResults />} />
-               </Routes>
-            </div>
-         </Router>
-      </Elements>
+      <AuthProvider>
+         <Elements stripe={stripePromise}>
+            <Router>
+               <div className="App">
+                  <Navbar />
+                  <Routes>
+                     <Route path="/" element={<Home />} />
+                     <Route path="/products" element={<Products />} />
+                     <Route path="/products/:id" element={<ProductDetails />} />
+                     <Route path="/cart" element={<Cart />} />
+                     <Route path="/login" element={<Login />} />
+                     <Route path="/register" element={<Register />} />
+                     <Route path="/profile" element={<Profile />} />
+                     <Route path="/checkout" element={<Checkout />} />
+                     <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+                     <Route path="/order-history" element={<OrderHistory />} />
+                     <Route path="/search" element={<SearchResults />} />
+                     <Route 
+                        path="/admin" 
+                        element={
+                           <ProtectedRoute isAdmin>
+                              <AdminDashboard />
+                           </ProtectedRoute>
+                        } 
+                     />
+                     <Route 
+                        path="/admin/products" 
+                        element={
+                           <ProtectedRoute isAdmin>
+                              <AdminProducts />
+                           </ProtectedRoute>
+                        } 
+                     />
+                     <Route 
+                        path="/admin/orders" 
+                        element={
+                           <ProtectedRoute isAdmin>
+                              <AdminOrders />
+                           </ProtectedRoute>
+                        } 
+                     />
+                     <Route 
+                        path="/admin/users" 
+                        element={
+                           <ProtectedRoute isAdmin>
+                              <AdminUsers />
+                           </ProtectedRoute>
+                        } 
+                     />
+                  </Routes>
+               </div>
+            </Router>
+         </Elements>
+      </AuthProvider>
    );
 }
 

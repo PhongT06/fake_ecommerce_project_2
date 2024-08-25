@@ -16,7 +16,6 @@ function Cart() {
    const fetchCart = async () => {
       try {
          const response = await api.get('/user/cart');
-         console.log('Cart response:', response.data); // Debugging
          setCart(response.data);
          setLoading(false);
       } catch (err) {
