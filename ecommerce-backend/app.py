@@ -91,6 +91,8 @@ class Product(db.Model):
    description = db.Column(db.Text)
    category = db.Column(db.String(100))
    image = db.Column(db.String(200))
+   rating = db.Column(db.Float)
+   rating_count = db.Column(db.Integer)
 
 class Cart(db.Model):
    id = db.Column(db.Integer, primary_key=True)
@@ -162,44 +164,73 @@ def make_api_request(endpoint, method='GET', data=None, params=None):
       return {"message": f"Error: {str(e)}"}, 500
 
 #### Products ####
-@app.route('/api/products', methods=['GET', 'POST'])
-def handle_products():
-   if request.method == 'GET':
-      limit = request.args.get('limit')
-      sort = request.args.get('sort')
-      params = {}
-      if limit:
-         params['limit'] = limit
-      if sort:
-         params['sort'] = sort
-      return jsonify(make_api_request('products', params=params))
-   elif request.method == 'POST':
-      return jsonify(make_api_request('products', method='POST', data=request.json))
-   try:
-      # Fetch products from FakeStore API
-      response = requests.get('https://fakestoreapi.com/products')
-      products = response.json()
-      return jsonify(products), 200
-   except Exception as e:
-      print(f"Error fetching products: {str(e)}")
-      return jsonify({"error": "Failed to fetch products"}), 500
+@app.route('/api/products', methods=['GET'])
+def get_products():
+   limit = request.args.get('limit', type=int)
+   sort = request.args.get('sort')
+   
+   query = Product.query
 
-@app.route('/api/products/<int:product_id>', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
-def handle_product(product_id):
-   if request.method == 'GET':
-      return jsonify(make_api_request(f'products/{product_id}'))
-   elif request.method in ['PUT', 'PATCH']:
-      return jsonify(make_api_request(f'products/{product_id}', method=request.method, data=request.json))
-   elif request.method == 'DELETE':
-      return jsonify(make_api_request(f'products/{product_id}', method='DELETE'))
+   if sort:
+      if sort == 'desc':
+         query = query.order_by(Product.id.desc())
+      elif sort == 'asc':
+         query = query.order_by(Product.id.asc())
+
+   if limit:
+      query = query.limit(limit)
+
+   products = query.all()
+   
+   return jsonify([{
+      'id': p.id,
+      'title': p.title,
+      'price': p.price,
+      'description': p.description,
+      'category': p.category,
+      'image': p.image,
+      'rating': {
+         'rate': p.rating,
+         'count': p.rating_count
+      }
+   } for p in products])
+
+@app.route('/api/products/<int:product_id>', methods=['GET'])
+def get_product(product_id):
+   product = Product.query.get_or_404(product_id)
+   return jsonify({
+      'id': product.id,
+      'title': product.title,
+      'price': product.price,
+      'description': product.description,
+      'category': product.category,
+      'image': product.image,
+      'rating': {
+         'rate': product.rating,
+         'count': product.rating_count
+      }
+   })
 
 @app.route('/api/products/categories', methods=['GET'])
 def get_categories():
-   return jsonify(make_api_request('products/categories'))
+   categories = db.session.query(Product.category).distinct().all()
+   return jsonify([category[0] for category in categories])
 
 @app.route('/api/products/category/<category>', methods=['GET'])
 def get_products_in_category(category):
-   return jsonify(make_api_request(f'products/category/{category}'))
+   products = Product.query.filter_by(category=category).all()
+   return jsonify([{
+      'id': p.id,
+      'title': p.title,
+      'price': p.price,
+      'description': p.description,
+      'category': p.category,
+      'image': p.image,
+      'rating': {
+         'rate': p.rating,
+         'count': p.rating_count
+      }
+   } for p in products])
 
 #### Carts ####
 @app.route('/api/carts', methods=['GET', 'POST'])
@@ -394,21 +425,20 @@ def manage_user_cart():
       cart_items = CartItem.query.filter_by(cart_id=cart.id).all()
       items = []
       for item in cart_items:
-         # Fetch product details from FakeStore API
-         response = requests.get(f'https://fakestoreapi.com/products/{item.product_id}')
-         if response.status_code == 200:
-               product = response.json()
-               items.append({
-                  "product_id": item.product_id,
-                  "title": product['title'],
-                  "price": float(product['price']),
-                  "quantity": item.quantity,
-                  "image": product['image'],
-                  "description": product['description'][:100] + '...' if len(product['description']) > 100 else product['description'],
-                  "category": product['category']
-               })
+         # Fetch product details from our database instead of FakeStore API
+         product = Product.query.get(item.product_id)
+         if product:
+            items.append({
+               "product_id": item.product_id,
+               "title": product.title,
+               "price": float(product.price),
+               "quantity": item.quantity,
+               "image": product.image,
+               "description": product.description[:100] + '...' if len(product.description) > 100 else product.description,
+               "category": product.category
+            })
          else:
-               print(f"Failed to fetch product {item.product_id} from FakeStore API")
+            print(f"Failed to fetch product {item.product_id} from database")
 
       return jsonify({
          "id": cart.id,
@@ -443,21 +473,13 @@ def manage_user_cart():
 
       db.session.commit()
 
-      # Fetch the product details to include in the response
+      # Fetch the product details from our database
       product = Product.query.get(product_id)
       if not product:
-         # If the product is not in our database, fetch it from the FakeStore API
-         response = requests.get(f'https://fakestoreapi.com/products/{product_id}')
-         if response.status_code == 200:
-            product_data = response.json()
-            product_title = product_data['title']
-         else:
-            product_title = f"Product {product_id}"
-      else:
-         product_title = product.title
+         return jsonify({"message": "Product not found"}), 404
 
       return jsonify({
-         "message": f"{product_title} added to cart successfully",
+         "message": f"{product.title} added to cart successfully",
          "product_id": product_id,
          "quantity": quantity
       }), 201

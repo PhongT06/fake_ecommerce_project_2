@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
+
+// Mock data to use when API is down
+const mockProducts = [
+   {
+      id: 1,
+      title: "Mock Product 1",
+      price: 19.99,
+      description: "This is a mock product description.",
+      category: "Mock Category",
+      image: "https://via.placeholder.com/150"
+   },
+   {
+      id: 2,
+      title: "Mock Product 2",
+      price: 29.99,
+      description: "Another mock product description.",
+      category: "Mock Category",
+      image: "https://via.placeholder.com/150"
+   },
+   // Add more mock products as needed
+];
 
 function Products() {
    const [products, setProducts] = useState([]);
@@ -21,11 +42,19 @@ function Products() {
          const response = await api.get('/products');
          setProducts(response.data);
          setLoading(false);
+         setError(null);
       } catch (err) {
          console.error('Error fetching products:', err);
-         setError('Failed to fetch products. Please try again.');
+         setError('Failed to fetch products from the server. Using mock data instead.');
+         setProducts(mockProducts);
          setLoading(false);
       }
+   };
+
+   const handleRetry = () => {
+      setLoading(true);
+      setError(null);
+      fetchProducts();
    };
 
    const handlePrev = () => {
@@ -46,8 +75,9 @@ function Products() {
             product_id: product.id,
             quantity: 1
          });
+         console.log('Add to cart response:', response.data); // Debugging
          setNotification({
-            message: `${product.title} added to cart!`,
+            message: response.data.message,
             type: 'success'
          });
       } catch (error) {
@@ -67,8 +97,29 @@ function Products() {
       navigate('/cart');
    };
 
-   if (loading) return <div className="container mx-auto mt-8 p-4 text-center text-lg font-semibold text-blue-600">Loading products...</div>;
-   if (error) return <div className="container mx-auto mt-8 p-4 text-center text-lg font-semibold text-red-600">{error}</div>;
+   if (loading) {
+      return (
+         <div className="container mx-auto mt-8 text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-xl">Loading products...</p>
+         </div>
+      );
+   }
+
+   if (error) {
+      return (
+         <div className="container mx-auto mt-8 text-center">
+            <p className="text-xl text-red-600 mb-4">{error}</p>
+            <button 
+               onClick={handleRetry} 
+               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors inline-flex items-center"
+            >
+               <RefreshCcw className="mr-2" size={20} />
+               Retry
+            </button>
+         </div>
+      );
+   }
 
    return (
       <div className="container mx-auto mt-8 px-4">

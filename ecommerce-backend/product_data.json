@@ -1,0 +1,243 @@
+[
+   {
+      "id": 1,
+      "title": "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
+      "price": 109.95,
+      "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday backpack.",
+      "category": "men's clothing",
+      "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+      "rating": {
+         "rate": 3.9,
+         "count": 120
+      }
+   },
+   {
+      "id": 2,
+      "title": "Volven - Premium Leather Wallet",
+      "price": 49.99,
+      "description": "Handcrafted genuine leather wallet with multiple card slots and a coin pocket. Slim design perfect for front or back pocket carry.",
+      "category": "accessories",
+      "image": "https://images.unsplash.com/photo-1582126486298-9d5194a50d82?q=80&w=1065&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "rating": {
+         "rate": 4.5,
+         "count": 89
+      }
+   },
+   {
+      "id": 3,
+      "title": "NuSound - Wireless Bluetooth Headphones",
+      "price": 129.99,
+      "description": "High-quality sound with active noise cancellation. Comfortable over-ear design with up to 30 hours of battery life.",
+      "category": "electronics",
+      "image": "https://images.unsplash.com/photo-1631281637573-14de1a1968fd?q=80&w=1295&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "rating": {
+         "rate": 4.2,
+         "count": 231
+      }
+   },
+   {
+      "id": 4,
+      "title": "iDrink - Stainless Steel Water Bottle",
+      "price": 24.95,
+      "description": "Double-walled, vacuum-insulated water bottle that keeps drinks cold for 24 hours or hot for 12 hours. BPA-free and eco-friendly.",
+      "category": "home",
+      "image": "https://images.pexels.com/photos/6271623/pexels-photo-6271623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "rating": {
+         "rate": 4.7,
+         "count": 156
+      }
+   },
+   {
+      "id": 5,
+      "title": "Nur - Women's Running Shoes",
+      "price": 89.99,
+      "description": "Lightweight and breathable running shoes with responsive cushioning. Perfect for long-distance runs or everyday workouts.",
+      "category": "women's clothing",
+      "image": "https://images.unsplash.com/photo-1529339944280-1a37d3d6fa8c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "rating": {
+         "rate": 4.3,
+         "count": 203
+      }
+   },
+   {
+      "id": 6,
+      "title": "NuView - Smart Home Security Camera",
+      "price": 79.99,
+      "description": "1080p HD indoor wireless security camera with night vision, two-way audio, and motion detection. Easy to set up and use with smartphone app. (Laptop not included)",
+      "category": "electronics",
+      "image": "https://images.pexels.com/photos/18485666/pexels-photo-18485666/free-photo-of-smart-home-devices.jpeg",
+      "rating": {
+         "rate": 4.0,
+         "count": 112
+      }
+   },
+   {
+      "id": 7,
+      "title": "Green Health - Organic Green Tea Set",
+      "price": 29.99,
+      "description": "Premium organic green tea set including sencha, gyokuro, and matcha varieties. Packed in a beautiful gift box.",
+      "category": "food",
+      "image": "https://cdn.pixabay.com/photo/2021/08/23/18/37/tea-6568547_1280.jpg",
+      "rating": {
+         "rate": 4.8,
+         "count": 67
+      }
+   },
+   {
+      "id": 8,
+      "title": "Rider - Minimalist Analog Watch",
+      "price": 159.99,
+      "description": "Elegant unisex watch with a clean, minimalist design. Features a genuine leather strap and scratch-resistant sapphire crystal.",
+      "category": "accessories",
+      "image": "https://cdn.pixabay.com/photo/2016/11/29/13/39/analog-watch-1869928_1280.jpg",
+      "rating": {
+         "rate": 4.6,
+         "count": 98
+      }
+   },
+   {
+      "id": 9,
+      "title": "Lightning - Portable Charger Power Bank",
+      "price": 39.99,
+      "description": "High-capacity 20000mAh power bank with fast charging capability. Charge multiple devices simultaneously with dual USB ports.",
+      "category": "electronics",
+      "image": "https://images.pexels.com/photos/3921718/pexels-photo-3921718.jpeg",
+      "rating": {
+         "rate": 4.4,
+         "count": 175
+      }
+   },
+   {
+      "id": 10,
+      "title": "Flex - Yoga Mat with Carrying Strap",
+      "price": 34.95,
+      "description": "Eco-friendly, non-slip yoga mat made from natural rubber. Includes a carrying strap for easy transport to and from the studio.",
+      "category": "fitness",
+      "image": "https://images.pexels.com/photos/4498605/pexels-photo-4498605.jpeg",
+      "rating": {
+         "rate": 4.1,
+         "count": 142
+      }
+   },
+   {
+      "id": 11,
+      "title": "EcoSip - Reusable Stainless Steel Straw Set",
+      "price": 12.99,
+      "description": "Set of 8 stainless steel straws with cleaning brushes and a carrying pouch. Perfect for eco-conscious individuals who want to reduce plastic waste.",
+      "category": "home",
+      "image": "https://images.pexels.com/photos/7262902/pexels-photo-7262902.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "rating": {
+         "rate": 4.8,
+         "count": 54
+      }
+   },
+   {
+      "id": 12,
+      "title": "SoundWave - Portable Bluetooth Speaker",
+      "price": 59.99,
+      "description": "Compact and powerful Bluetooth speaker with deep bass and clear sound. Water-resistant design makes it perfect for outdoor adventures.",
+      "category": "electronics",
+      "image": "https://images.pexels.com/photos/3779780/pexels-photo-3779780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "rating": {
+         "rate": 4.5,
+         "count": 120
+      }
+   },
+   {
+      "id": 13,
+      "title": "GlamGlow - LED Makeup Mirror",
+      "price": 39.99,
+      "description": "LED makeup mirror with adjustable brightness and 360-degree rotation. Ideal for flawless makeup application and skincare routines.",
+      "category": "beauty",
+      "image": "https://images.pexels.com/photos/15271510/pexels-photo-15271510/free-photo-of-close-up-of-a-modern-mirror-with-led-light.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "rating": {
+         "rate": 4.7,
+         "count": 89
+      }
+   },
+   {
+      "id": 14,
+      "title": "FitTrack - Smart Fitness Tracker",
+      "price": 79.99,
+      "description": "Advanced fitness tracker with heart rate monitor, sleep tracking, and GPS. Syncs with your smartphone to provide detailed health insights.",
+      "category": "fitness",
+      "image": "https://images.pexels.com/photos/437036/pexels-photo-437036.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "rating": {
+         "rate": 4.3,
+         "count": 150
+      }
+   },
+   {
+      "id": 15,
+      "title": "BrewMaster - Electric Coffee Grinder",
+      "price": 49.99,
+      "description": "Electric coffee grinder with adjustable grind settings for perfect coffee every time. Compact design fits easily on any kitchen counter.",
+      "category": "kitchen",
+      "image": "https://images.pexels.com/photos/4349849/pexels-photo-4349849.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "rating": {
+         "rate": 4.6,
+         "count": 102
+      }
+   },
+   {
+      "id": 16,
+      "title": "AquaPure - Water Purification Bottle",
+      "price": 29.99,
+      "description": "Portable water bottle with built-in purification system. Ensures clean and safe drinking water wherever you go.",
+      "category": "outdoors",
+      "image": "https://th.bing.com/th/id/OIP.qo7B5Q4hL2HO8u-M2dL1AAHaH_?rs=1&pid=ImgDetMain",
+      "rating": {
+         "rate": 4.4,
+         "count": 78
+      }
+   },
+   {
+      "id": 17,
+      "title": "ZenGarden - Desktop Sand Garden",
+      "price": 24.99,
+      "description": "Miniature sand garden with rake and stones for stress relief and relaxation. Perfect for your office desk or home workspace.",
+      "category": "home",
+      "image": "https://images-na.ssl-images-amazon.com/images/I/716EDqZxxiL._AC_SL1500_.jpg",
+      "rating": {
+         "rate": 4.9,
+         "count": 65
+      }
+   },
+   {
+      "id": 18,
+      "title": "TechGuard - RFID Blocking Wallet",
+      "price": 19.99,
+      "description": "Slim and stylish wallet with RFID blocking technology to protect your cards. Made from durable materials for long-lasting use.",
+      "category": "accessories",
+      "image": "https://i5.walmartimages.com/asr/07690a79-961a-4047-865c-54c4fe892fdb.9b75940f95c9e131212b887b500e094a.jpeg?odnWidth=1000&odnHeight=1000&odnBg=ffffff",
+      "rating": {
+         "rate": 4.2,
+         "count": 110
+      }
+   },
+   {
+      "id": 19,
+      "title": "GlowLight - Rechargeable LED Lantern",
+      "price": 34.99,
+      "description": "Bright and energy-efficient LED lantern with multiple light modes. Rechargeable battery provides hours of illumination.",
+      "category": "outdoors",
+      "image": "https://i5.walmartimages.com/asr/d43e8c13-abf7-43d0-b60a-c7d567d3c353.bc96e356fac3c905eb5329975d3dfe2b.jpeg",
+      "rating": {
+         "rate": 4.5,
+         "count": 95
+      }
+   },
+   {
+      "id": 20,
+      "title": "PureBreeze - Air Purifier with HEPA Filter",
+      "price": 99.99,
+      "description": "Compact air purifier with HEPA filter to remove allergens and pollutants. Ideal for small rooms and offices.",
+      "category": "home",
+      "image": "https://m.media-amazon.com/images/I/61Y2Ao4WfRL._AC_SL1500_.jpg",
+      "rating": {
+         "rate": 4.7,
+         "count": 130
+      }
+   }
+   
+]
