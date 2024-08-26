@@ -41,6 +41,21 @@ function OrderConfirmation() {
       }
    };
 
+   const formatShippingAddress = (address) => {
+      const parts = address.split(', ');
+      if (parts.length >= 4) {
+         return (
+            <>
+               <p>{parts[0]}</p>
+               <p>{parts[1]}</p>
+               <p>{`${parts[2]}, ${parts[3]}`}</p>
+               {parts[4] && <p>{parts[4]}</p>}
+            </>
+         );
+      }
+      return address;
+   };
+
    if (loading) return <div>Loading...</div>;
    if (error) return <div className="text-red-500">{error}</div>;
    if (!order) return <div>No order found</div>;
@@ -67,7 +82,7 @@ function OrderConfirmation() {
          </div>
          <div className="mb-4">
             <h3 className="text-xl font-semibold mb-2">Shipping Information</h3>
-            <p>{order.shipping_address}</p>
+            {formatShippingAddress(order.shipping_address)}
          </div>
          <div className="mb-4">
             <h3 className="text-xl font-semibold mb-2">Order Items</h3>

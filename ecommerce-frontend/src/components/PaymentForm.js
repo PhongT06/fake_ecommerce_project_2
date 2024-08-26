@@ -31,6 +31,13 @@ function PaymentForm({ onSubmit }) {
 
    return (
       <form onSubmit={handleSubmit} className="space-y-4">
+         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+            <p className="font-bold">Test Mode</p>
+            <p>This is a showcase project. Please use the test card number:</p>
+            <p className="font-mono bg-white p-2 mt-2">4242 4242 4242 4242</p>
+            <p className="mt-2">You can use any future date for expiry and any 3-digit number for CVC.</p>
+         </div>
+         
          <div className="bg-gray-50 p-4 rounded-md">
             <CardElement options={{style: {base: {fontSize: '16px'}}}} />
          </div>

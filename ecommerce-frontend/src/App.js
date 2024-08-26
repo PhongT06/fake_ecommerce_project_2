@@ -20,64 +20,67 @@ import OrderHistory from './pages/OrderHistory';
 import SearchResults from './pages/SearchResults';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 function App() {
    return (
       <AuthProvider>
-         <Elements stripe={stripePromise}>
-            <Router>
-               <div className="App">
-                  <Navbar />
-                  <Routes>
-                     <Route path="/" element={<Home />} />
-                     <Route path="/products" element={<Products />} />
-                     <Route path="/products/:id" element={<ProductDetails />} />
-                     <Route path="/cart" element={<Cart />} />
-                     <Route path="/login" element={<Login />} />
-                     <Route path="/register" element={<Register />} />
-                     <Route path="/profile" element={<Profile />} />
-                     <Route path="/checkout" element={<Checkout />} />
-                     <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
-                     <Route path="/order-history" element={<OrderHistory />} />
-                     <Route path="/search" element={<SearchResults />} />
-                     <Route 
-                        path="/admin" 
-                        element={
-                           <ProtectedRoute isAdmin>
-                              <AdminDashboard />
-                           </ProtectedRoute>
-                        } 
-                     />
-                     <Route 
-                        path="/admin/products" 
-                        element={
-                           <ProtectedRoute isAdmin>
-                              <AdminProducts />
-                           </ProtectedRoute>
-                        } 
-                     />
-                     <Route 
-                        path="/admin/orders" 
-                        element={
-                           <ProtectedRoute isAdmin>
-                              <AdminOrders />
-                           </ProtectedRoute>
-                        } 
-                     />
-                     <Route 
-                        path="/admin/users" 
-                        element={
-                           <ProtectedRoute isAdmin>
-                              <AdminUsers />
-                           </ProtectedRoute>
-                        } 
-                     />
-                  </Routes>
-               </div>
-            </Router>
-         </Elements>
+         <CartProvider>
+            <Elements stripe={stripePromise}>
+               <Router>
+                  <div className="App">
+                     <Navbar />
+                     <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/products/:id" element={<ProductDetails />} />
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+                        <Route path="/order-history" element={<OrderHistory />} />
+                        <Route path="/search" element={<SearchResults />} />
+                        <Route 
+                           path="/admin" 
+                           element={
+                              <ProtectedRoute isAdmin>
+                                 <AdminDashboard />
+                              </ProtectedRoute>
+                           } 
+                        />
+                        <Route 
+                           path="/admin/products" 
+                           element={
+                              <ProtectedRoute isAdmin>
+                                 <AdminProducts />
+                              </ProtectedRoute>
+                           } 
+                        />
+                        <Route 
+                           path="/admin/orders" 
+                           element={
+                              <ProtectedRoute isAdmin>
+                                 <AdminOrders />
+                              </ProtectedRoute>
+                           } 
+                        />
+                        <Route 
+                           path="/admin/users" 
+                           element={
+                              <ProtectedRoute isAdmin>
+                                 <AdminUsers />
+                              </ProtectedRoute>
+                           } 
+                        />
+                     </Routes>
+                  </div>
+               </Router>
+            </Elements>
+         </CartProvider>
       </AuthProvider>
    );
 }

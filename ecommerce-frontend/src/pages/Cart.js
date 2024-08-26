@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
 function Cart() {
    const [cart, setCart] = useState(null);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const navigate = useNavigate();
+   const { updateCartItemCount } = useCart();
 
    useEffect(() => {
       fetchCart();
@@ -18,6 +20,7 @@ function Cart() {
          const response = await api.get('/user/cart');
          setCart(response.data);
          setLoading(false);
+         updateCartItemCount();
       } catch (err) {
          console.error('Error fetching cart:', err);
          if (err.response && err.response.status === 401) {
@@ -33,6 +36,7 @@ function Cart() {
       try {
          await api.put('/user/cart', { product_id: productId, quantity });
          fetchCart();
+         updateCartItemCount();
       } catch (err) {
          setError('Failed to update cart. Please try again.');
       }
@@ -42,6 +46,7 @@ function Cart() {
       try {
          await api.put('/user/cart', { product_id: productId, quantity: 0 });
          fetchCart();
+         updateCartItemCount();
       } catch (err) {
          setError('Failed to remove item. Please try again.');
       }

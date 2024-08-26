@@ -7,6 +7,7 @@ import PaymentForm from '../components/PaymentForm';
 import OrderReview from '../components/OrderReview';
 import api from '../utils/api';
 import { CreditCard, Truck, ClipboardList } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
@@ -17,6 +18,7 @@ function Checkout() {
    const [cartItems, setCartItems] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
+   const { updateCartItemCount } = useCart();
    const navigate = useNavigate();
 
    useEffect(() => {
@@ -64,6 +66,7 @@ function Checkout() {
 
          // Clear the cart after successful order placement
          await api.delete('/user/cart');
+         updateCartItemCount();
 
          navigate(`/order-confirmation/${orderResponse.data.order_id}`);
       } catch (error) {
@@ -95,6 +98,11 @@ function Checkout() {
    return (
       <div className="container mx-auto mt-8 px-4 max-w-4xl">
          <h2 className="text-3xl font-bold mb-8 text-center">Checkout</h2>
+
+         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-8" role="alert">
+            <p className="font-bold">Showcase Project</p>
+            <p>This is a demonstration project. No real payments will be processed.</p>
+         </div>
 
          <div className="flex justify-between mb-8">
             <div className={`flex-1 text-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useCart } from '../contexts/CartContext';
 import api from '../utils/api';
 
 function ProductDetails() {
@@ -9,6 +10,7 @@ function ProductDetails() {
    const [quantity, setQuantity] = useState(1);
    const [notification, setNotification] = useState(null);
    const { id } = useParams();
+   const { addToCart } = useCart();
 
    const fetchProduct = useCallback(async () => {
       try {
@@ -29,14 +31,14 @@ function ProductDetails() {
    const handleAddToCart = useCallback(async () => {
       try {
          console.log('Adding to cart:', { product_id: id, quantity });
-         await api.post('/user/cart', { product_id: id, quantity });
+         await addToCart(id, quantity);
          console.log('Successfully added to cart');
-         setNotification(`${product.title} has been added to your cart!`);
+         setNotification(`${quantity} ${product.title}${quantity > 1 ? 's have' : ' has'} been added to your cart!`);
       } catch (err) {
          console.error('Error adding item to cart:', err);
          setError('Failed to add item to cart. Please try again.');
       }
-   }, [id, quantity, product]);
+   }, [id, quantity, product, addToCart]);
 
    if (loading) return <div className="container mx-auto mt-8">Loading...</div>;
    if (error) return <div className="container mx-auto mt-8 text-red-500">{error}</div>;

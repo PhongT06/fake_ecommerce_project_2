@@ -21,7 +21,7 @@ from flask import abort
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 bcrypt = Bcrypt(app)
 
 ####  Configuration ####
