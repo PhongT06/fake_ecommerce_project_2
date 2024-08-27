@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import ConfirmationModal from '../components/ConfirmationModal';
 
@@ -10,13 +10,8 @@ function OrderConfirmation() {
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [successMessage, setSuccessMessage] = useState('');
    const { orderId } = useParams();
-   const navigate = useNavigate();
 
-   useEffect(() => {
-      fetchOrder();
-   }, [orderId, fetchOrder]);
-
-   const fetchOrder = async () => {
+   const fetchOrder = useCallback(async () => {
       try {
          const response = await api.get(`/orders/${orderId}`);
          setOrder(response.data);
@@ -26,7 +21,11 @@ function OrderConfirmation() {
          setError('Failed to fetch order details. Please try again.');
          setLoading(false);
       }
-   };
+   }, [orderId]);
+
+   useEffect(() => {
+      fetchOrder();
+   }, [fetchOrder]);
 
    const handleCancelOrder = async () => {
       try {

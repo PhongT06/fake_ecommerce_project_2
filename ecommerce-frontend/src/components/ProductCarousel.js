@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ProductCarousel = ({ products = [] }) => {
    const [currentIndex, setCurrentIndex] = useState(0);
 
-   const nextSlide = () => {
+   const nextSlide = useCallback(() => {
       setCurrentIndex((prevIndex) => 
          prevIndex === products.length - 1 ? 0 : prevIndex + 1
       );
-   };
+   }, [products.length]);
 
-   const prevSlide = () => {
+   const prevSlide = useCallback(() => {
       setCurrentIndex((prevIndex) => 
          prevIndex === 0 ? products.length - 1 : prevIndex - 1
       );
-   };
+   }, [products.length]);
 
    useEffect(() => {
       const timer = setInterval(() => {
