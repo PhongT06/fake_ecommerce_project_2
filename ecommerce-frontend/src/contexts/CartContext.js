@@ -9,10 +9,11 @@ export const CartProvider = ({ children }) => {
    const updateCartItemCount = async () => {
       try {
          const response = await api.get('/user/cart');
-         const totalQuantity = response.data.items.reduce((total, item) => total + item.quantity, 0);
+         const totalQuantity = response.data.items.reduce((total, item) => total + item.quantity, 0) || 0;
          setCartItemCount(totalQuantity);
       } catch (err) {
          console.error('Error fetching cart items:', err);
+         setCartItemCount(0);
       }
    };
 
@@ -37,4 +38,10 @@ export const CartProvider = ({ children }) => {
    );
 };
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+   const context = useContext(CartContext);
+   if (context === undefined) {
+      throw new Error('useCart must be used within a CartProvider');
+   }
+   return context;
+};
