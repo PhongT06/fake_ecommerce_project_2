@@ -9,7 +9,7 @@ function Login() {
    const [username, setUsername] = useState('');
    const [password, setPassword] = useState('');
    const [error, setError] = useState('');
-   const [successMessage, setSuccessMessage] = useState('');
+   const [successMessage] = useState('');
    const navigate = useNavigate();
    const { login, updateUser } = useAuth();
    const { updateCartItemCount } = useCart();

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import api from '../utils/api';
 
 function PaymentForm({ onSubmit }) {
    const stripe = useStripe();
