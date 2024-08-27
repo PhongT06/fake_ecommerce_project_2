@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import { Search, ShoppingCart, Menu, User, Package, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, Menu, User, Package, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 
@@ -14,13 +14,7 @@ function Navbar() {
    const [isMenuOpen, setIsMenuOpen] = useState(false);
    const navigate = useNavigate();
 
-   useEffect(() => {
-      fetchCategories();
-      if (!user) {
-         checkUserStatus();
-      }
-   }, [user]);
-
+   
    const checkUserStatus = async () => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -33,7 +27,7 @@ function Navbar() {
          }
       }
    };
-
+   
    const fetchCategories = async () => {
       try {
          const response = await api.get('/categories');
@@ -42,6 +36,13 @@ function Navbar() {
          console.error('Error fetching categories:', err);
       }
    };
+   
+   useEffect(() => {
+      fetchCategories();
+      if (!user) {
+         checkUserStatus();
+      }
+   }, [user, checkUserStatus, fetchCategories]);
 
    const handleLogout = () => {
       logout();
@@ -106,24 +107,33 @@ function Navbar() {
          {/* Dropdown Menu */}
          {isMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-               <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <User size={18} className="inline-block mr-2" />
-                  Profile
-               </Link>
-               {user && user.role === 'admin' && (
-                  <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                     <Package size={18} className="inline-block mr-2" />
-                     Admin Dashboard
+               {user ? (
+                  <>
+                     <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <User size={18} className="inline-block mr-2" />
+                        Profile
+                     </Link>
+                     {user.role === 'admin' && (
+                        <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                           <Package size={18} className="inline-block mr-2" />
+                           Admin Dashboard
+                        </Link>
+                     )}
+                     <Link to="/order-history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <Package size={18} className="inline-block mr-2" />
+                        Order History
+                     </Link>
+                     <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <LogOut size={18} className="inline-block mr-2" />
+                        Logout
+                     </button>
+                  </>
+               ) : (
+                  <Link to="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                     <LogIn size={18} className="inline-block mr-2" />
+                     Log In
                   </Link>
                )}
-               <Link to="/order-history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <Package size={18} className="inline-block mr-2" />
-                  Order History
-               </Link>
-               <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <LogOut size={18} className="inline-block mr-2" />
-                  Logout
-               </button>
             </div>
          )}
       </nav>

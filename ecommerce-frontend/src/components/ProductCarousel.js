@@ -25,7 +25,7 @@ const ProductCarousel = ({ products = [] }) => {
       }, 5000);
 
       return () => clearInterval(timer);
-   }, [currentIndex, products.length]);
+   }, [nextSlide, products.length]);
 
    if (!products || products.length === 0) {
       return <div className="text-center text-gray-500">No products available.</div>;

@@ -21,7 +21,10 @@ from flask import abort
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://neoversemarketplace.netlify.app/"}})
+CORS(app, resources={r"/*": {"origins": [
+   "https://neoversemarketplace.netlify.app",
+   "http://localhost:3000"
+]}})
 bcrypt = Bcrypt(app)
 
 ####  Configuration ####
