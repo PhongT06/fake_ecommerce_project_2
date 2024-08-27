@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { Search, ShoppingCart, Menu, User, Package, LogOut, LogIn } from 'lucide-react';
@@ -9,13 +9,13 @@ function Navbar() {
    const { user, logout, updateUser } = useAuth();
    const { cartItemCount, updateCartItemCount } = useCart();
    const [searchTerm, setSearchTerm] = useState('');
-   const [setCategories] = useState([]);
-   const [selectedCategory] = useState('');
+   const [categories, setCategories] = useState([]);
+   const [selectedCategory, setSelectedCategory] = useState('');
    const [isMenuOpen, setIsMenuOpen] = useState(false);
    const navigate = useNavigate();
-
+   const menuRef = useRef(null);
    
-   const checkUserStatus = async () => {
+   const checkUserStatus = useCallback(async () => {
       const token = localStorage.getItem('token');
       if (token) {
          try {
@@ -26,23 +26,36 @@ function Navbar() {
             localStorage.removeItem('token');
          }
       }
-   };
-   
-   const fetchCategories = async () => {
+   }, [updateUser]);
+
+   const fetchCategories = useCallback(async () => {
       try {
          const response = await api.get('/categories');
          setCategories(response.data);
       } catch (err) {
          console.error('Error fetching categories:', err);
       }
-   };
-   
+   }, []);
+
    useEffect(() => {
       fetchCategories();
       if (!user) {
          checkUserStatus();
       }
-   }, [user, checkUserStatus, fetchCategories]);
+   }, [user, fetchCategories, checkUserStatus]);
+
+   useEffect(() => {
+      const handleClickOutside = (event) => {
+         if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setIsMenuOpen(false);
+         }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+         document.removeEventListener('mousedown', handleClickOutside);
+      };
+   }, []);
 
    const handleLogout = () => {
       logout();
@@ -106,7 +119,7 @@ function Navbar() {
 
          {/* Dropdown Menu */}
          {isMenuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+            <div ref={menuRef} className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
                {user ? (
                   <>
                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
