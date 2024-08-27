@@ -45,7 +45,7 @@ jobs:
         node-version: '14'
 
     - name: Install frontend dependencies
-      run: npm ci
+      run: npm install
 
     - name: Run frontend tests
       run: npm test
