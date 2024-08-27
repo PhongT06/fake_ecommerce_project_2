@@ -15,20 +15,20 @@ function Products() {
    const { addToCart } = useCart();
 
    useEffect(() => {
+      const fetchProducts = async () => {
+         try {
+            const response = await api.get('/products');
+            setProducts(response.data);
+            setLoading(false);
+         } catch (err) {
+            console.error('Error fetching products:', err);
+            setError('Failed to fetch products. Please try again.');
+            setLoading(false);
+         }
+      };
+
       fetchProducts();
    }, []);
-
-   const fetchProducts = async () => {
-      try {
-         const response = await api.get('/products');
-         setProducts(response.data) || [];
-         setLoading(false);
-      } catch (err) {
-         console.error('Error fetching products:', err);
-         setError('Failed to fetch products. Please try again.');
-         setLoading(false);
-      }
-   };
 
    const handlePrev = () => {
       setActiveSlide((prev) => (prev === 0 ? products.length - 1 : prev - 1));
