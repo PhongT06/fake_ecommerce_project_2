@@ -9,8 +9,8 @@ function Navbar() {
    const { user, logout, updateUser } = useAuth();
    const { cartItemCount, updateCartItemCount } = useCart();
    const [searchTerm, setSearchTerm] = useState('');
-   const [setCategories] = useState([]);
-   const [selectedCategory] = useState('');
+   const [categories, setCategories] = useState([]);
+   const [selectedCategory, setSelectedCategory] = useState('');
    const [isMenuOpen, setIsMenuOpen] = useState(false);
    const navigate = useNavigate();
    const menuRef = useRef(null);
@@ -35,7 +35,7 @@ function Navbar() {
       } catch (err) {
          console.error('Error fetching categories:', err);
       }
-   }, []);
+   }, [setCategories]);
 
    useEffect(() => {
       fetchCategories();
