@@ -15,6 +15,7 @@ from werkzeug.security import generate_password_hash
 import stripe
 from functools import wraps
 from flask import abort
+import json
 
 
 # Load environment variables
@@ -59,6 +60,26 @@ def admin_required(fn):
          return jsonify({"msg": "Admin access required"}), 403
       return fn(*args, **kwargs)
    return wrapper
+
+###### Seeding on Render##########
+def seed_products():
+   with open('product_data.json') as f:
+      products = json.load(f)
+   
+   for product in products:
+      new_product = Product(
+         id=product['id'],
+         title=product['title'],
+         price=product['price'],
+         description=product['description'],
+         category=product['category'],
+         image=product['image'],
+         rating=product['rating']['rate'],
+         count=product['rating']['count']
+      )
+      db.session.add(new_product)
+   
+   db.session.commit()
 
 #### Create admin user ####
 def create_admin_user(username, email, password):
