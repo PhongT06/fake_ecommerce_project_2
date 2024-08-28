@@ -805,6 +805,10 @@ def make_first_admin():
       return jsonify({"message": f"User {user.username} is now an admin"}), 200
    return jsonify({"message": "No users found"}), 404
 
+@app.route('/')
+def home():
+   return "NeoVerse Market API is running!"
+
 #### Create database tables ####
 with app.app_context():
    db.create_all()
