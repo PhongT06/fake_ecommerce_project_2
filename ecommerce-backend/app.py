@@ -33,6 +33,8 @@ bcrypt = Bcrypt(app)
 ####  Configuration ####
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///ecommerce.db')
+if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
+   app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-string-the-second')  
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
@@ -832,77 +834,45 @@ def make_first_admin():
 def home():
    return "NeoVerse Market API is running!"
 
-def seed_products_if_empty():
+def seed_products():
    if Product.query.count() == 0:
-      with open('product_data.json') as f:
-         products = json.load(f)
+      current_dir = os.path.dirname(os.path.abspath(__file__))
+      json_file_path = os.path.join(current_dir, 'product_data.json')
       
-      for product in products:
-         new_product = Product(
-               title=product['title'],
-               price=product['price'],
-               description=product['description'],
-               category=product['category'],
-               image=product['image'],
-               rating=product['rating']['rate'],
-               rating_count=product['rating']['count']
+      if not os.path.exists(json_file_path):
+         print(f"product_data.json not found at {json_file_path}")
+         return
+      
+      with open(json_file_path, 'r') as f:
+         products_data = json.load(f)
+      
+      for product_data in products_data:
+         product = Product(
+               title=product_data['title'],
+               price=product_data['price'],
+               description=product_data['description'],
+               category=product_data['category'],
+               image=product_data['image'],
+               rating=product_data['rating']['rate'],
+               rating_count=product_data['rating']['count']
          )
-         db.session.add(new_product)
+         db.session.add(product)
       
       db.session.commit()
-      print("Database seeded with initial products.")
+      print("Products seeded successfully")
 
-@app.before_first_request
-def initialize_database():
-   db.create_all()
-   seed_products_if_empty()
+def init_db():
+   with app.app_context():
+      db.create_all()
+      seed_products()
 
 @app.route('/api/seed-products', methods=['POST'])
 def seed_products_route():
    try:
       current_app.logger.info("Starting product seeding process")
-      
-      # Get the directory of the current file (app.py)
-      current_dir = os.path.dirname(os.path.abspath(__file__))
-      
-      # Construct the path to product_data.json
-      json_file_path = os.path.join(current_dir, 'product_data.json')
-      
-      current_app.logger.info(f"Looking for product_data.json at: {json_file_path}")
-
-      if not os.path.exists(json_file_path):
-         current_app.logger.error(f"product_data.json not found at {json_file_path}")
-         return jsonify({"error": f"product_data.json not found at {json_file_path}"}), 404
-
-      with current_app.app_context():
-         # Clear existing products
-         db.session.query(Product).delete()
-         db.session.commit()
-         current_app.logger.info("Existing products cleared from database")
-
-         # Load product data from JSON file
-         with open(json_file_path, 'r') as f:
-               products_data = json.load(f)
-
-         current_app.logger.info(f"Loaded {len(products_data)} products from JSON")
-
-         # Insert products into database
-         for product_data in products_data:
-               product = Product(
-                  title=product_data['title'],
-                  price=product_data['price'],
-                  description=product_data['description'],
-                  category=product_data['category'],
-                  image=product_data['image'],
-                  rating=product_data['rating']['rate'],
-                  rating_count=product_data['rating']['count']
-               )
-               db.session.add(product)
-
-         db.session.commit()
-         current_app.logger.info("Products seeded successfully")
-      
-      return jsonify({"message": "Products seeded successfully", "count": len(products_data)}), 200
+      seed_products()
+      count = Product.query.count()
+      return jsonify({"message": "Products seeded successfully", "count": count}), 200
    except Exception as e:
       current_app.logger.error(f"Error seeding products: {str(e)}")
       current_app.logger.error(traceback.format_exc())
@@ -923,6 +893,10 @@ def get_product_count():
    except Exception as e:
       current_app.logger.error(f"Error getting product count: {str(e)}")
       return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+   init_db()
+   app.run(debug=True)
 
 #### Create database tables ####
 with app.app_context():
