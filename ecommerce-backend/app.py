@@ -17,6 +17,7 @@ from functools import wraps
 from flask import abort
 import json
 import traceback
+import logging
 
 
 # Load environment variables
@@ -53,6 +54,11 @@ if not stripe.api_key:
 
 FAKESTORE_API_URL = "https://fakestoreapi.com"
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 #### Helper function to check if a user is an admin ####
 def admin_required(fn):
    @wraps(fn)
@@ -63,26 +69,6 @@ def admin_required(fn):
          return jsonify({"msg": "Admin access required"}), 403
       return fn(*args, **kwargs)
    return wrapper
-
-###### Seeding on Render##########
-def seed_products():
-   with open('product_data.json') as f:
-      products = json.load(f)
-   
-   for product in products:
-      new_product = Product(
-         id=product['id'],
-         title=product['title'],
-         price=product['price'],
-         description=product['description'],
-         category=product['category'],
-         image=product['image'],
-         rating=product['rating']['rate'],
-         count=product['rating']['count']
-      )
-      db.session.add(new_product)
-   
-   db.session.commit()
 
 #### Create admin user ####
 def create_admin_user(username, email, password):
@@ -176,6 +162,47 @@ users_schema = UserSchema(many=True)
 cart_schema = CartSchema()
 product_schema = ProductSchema()
 products_schema = ProductSchema(many=True)
+
+####### Seed products###################
+def seed_products():
+   logger.info("Attempting to seed products...")
+   if Product.query.count() == 0:
+      current_dir = os.path.dirname(os.path.abspath(__file__))
+      json_file_path = os.path.join(current_dir, 'product_data.json')
+      
+      if not os.path.exists(json_file_path):
+         logger.error(f"product_data.json not found at {json_file_path}")
+         return
+      
+      with open(json_file_path, 'r') as f:
+         products_data = json.load(f)
+      
+      for product_data in products_data:
+         product = Product(
+               title=product_data['title'],
+               price=product_data['price'],
+               description=product_data['description'],
+               category=product_data['category'],
+               image=product_data['image'],
+               rating=product_data['rating']['rate'],
+               rating_count=product_data['rating']['count']
+         )
+         db.session.add(product)
+      
+      db.session.commit()
+      logger.info(f"Added {len(products_data)} products to the database")
+   else:
+      logger.info(f"Database already contains {Product.query.count()} products. Skipping seeding.")
+
+def init_db():
+   logger.info("Initializing database...")
+   with app.app_context():
+      db.create_all()
+      seed_products()
+   logger.info("Database initialization completed.")
+
+# Call init_db()
+init_db()
 
 #### Helper function for API requests ####
 def make_api_request(endpoint, method='GET', data=None, params=None):
@@ -833,33 +860,6 @@ def make_first_admin():
 @app.route('/')
 def home():
    return "NeoVerse Market API is running!"
-
-def seed_products():
-   if Product.query.count() == 0:
-      current_dir = os.path.dirname(os.path.abspath(__file__))
-      json_file_path = os.path.join(current_dir, 'product_data.json')
-      
-      if not os.path.exists(json_file_path):
-         print(f"product_data.json not found at {json_file_path}")
-         return
-      
-      with open(json_file_path, 'r') as f:
-         products_data = json.load(f)
-      
-      for product_data in products_data:
-         product = Product(
-               title=product_data['title'],
-               price=product_data['price'],
-               description=product_data['description'],
-               category=product_data['category'],
-               image=product_data['image'],
-               rating=product_data['rating']['rate'],
-               rating_count=product_data['rating']['count']
-         )
-         db.session.add(product)
-      
-      db.session.commit()
-      print("Products seeded successfully")
 
 def init_db():
    with app.app_context():
