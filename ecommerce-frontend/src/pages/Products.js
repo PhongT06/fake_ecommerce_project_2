@@ -52,7 +52,7 @@ function Products() {
       } catch (error) {
          console.error('Error adding to cart:', error);
          setNotification({
-            message: 'Failed to add item to cart. Please try again.',
+            message: 'Failed to add item to cart. Please log in first.',
             type: 'error'
          });
       }

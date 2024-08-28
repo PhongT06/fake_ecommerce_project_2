@@ -36,7 +36,7 @@ function ProductDetails() {
          setNotification(`${quantity} ${product.title}${quantity > 1 ? 's have' : ' has'} been added to your cart!`);
       } catch (err) {
          console.error('Error adding item to cart:', err);
-         setError('Failed to add item to cart. Please try again.');
+         setError('Failed to add item to cart. Please log in first.');
       }
    }, [id, quantity, product, addToCart]);
 

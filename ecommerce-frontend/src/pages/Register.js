@@ -59,6 +59,17 @@ function Register() {
 
          <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+               <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
+                  <p className="font-bold">Demo Project</p>
+                  <p>This is a showcase e-commerce website. You can use fake information to register and test out the site.</p>
+                  <p className="mt-2">Example:</p>
+                  <ul className="list-disc list-inside ml-4">
+                     <li>Username: testuser123</li>
+                     <li>Email: testuser@example.com</li>
+                     <li>Password: password123</li>
+                  </ul>
+               </div>
+
                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
                {successMessage && <p className="text-green-500 mb-4 text-center">{successMessage}</p>}
                <form onSubmit={handleSubmit} className="space-y-6">
