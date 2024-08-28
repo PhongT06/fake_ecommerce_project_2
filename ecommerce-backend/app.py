@@ -21,7 +21,7 @@ from flask import abort
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": [
+CORS(app, resources={r"/api/*": {"origins": [
    "https://main--neoversemarketplace.netlify.app",
    "https://neoversemarketplace.netlify.app",
    "http://localhost:3000"
