@@ -9,8 +9,6 @@ function Navbar() {
    const { user, logout, updateUser } = useAuth();
    const { cartItemCount, updateCartItemCount } = useCart();
    const [searchTerm, setSearchTerm] = useState('');
-   const [categories, setCategories] = useState([]);
-   const [selectedCategory, setSelectedCategory] = useState('');
    const [isMenuOpen, setIsMenuOpen] = useState(false);
    const navigate = useNavigate();
    const menuRef = useRef(null);
@@ -28,21 +26,11 @@ function Navbar() {
       }
    }, [updateUser]);
 
-   const fetchCategories = useCallback(async () => {
-      try {
-         const response = await api.get('/categories');
-         setCategories(response.data);
-      } catch (err) {
-         console.error('Error fetching categories:', err);
-      }
-   }, [setCategories]);
-
    useEffect(() => {
-      fetchCategories();
       if (!user) {
          checkUserStatus();
       }
-   }, [user, fetchCategories, checkUserStatus]);
+   }, [user, checkUserStatus]);
 
    useEffect(() => {
       const handleClickOutside = (event) => {
@@ -66,7 +54,7 @@ function Navbar() {
    const handleSearch = (e) => {
       e.preventDefault();
       if (searchTerm.trim()) {
-         navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}&category=${encodeURIComponent(selectedCategory)}`);
+         navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
       }
    };
 
