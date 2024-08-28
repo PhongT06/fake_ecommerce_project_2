@@ -157,17 +157,17 @@ function Products() {
                </div>
                <button
                   onClick={handlePrev}
-                  className="absolute top-1/2 left-1/4 transform -translate-y-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="absolute top-1/2 left-0 md:left-1/4 transform -translate-y-1/2 md:-translate-x-full bg-white rounded-full p-2 md:p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600"
                   aria-label="Previous product"
                >
-                  <ChevronLeft className="w-8 h-8 text-gray-800" />
+                  <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-gray-800" />
                </button>
                <button
                   onClick={handleNext}
-                  className="absolute top-1/2 right-1/4 transform -translate-y-1/2 translate-x-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="absolute top-1/2 right-0 md:right-1/4 transform -translate-y-1/2 md:translate-x-full bg-white rounded-full p-2 md:p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-600"
                   aria-label="Next product"
                >
-                  <ChevronRight className="w-8 h-8 text-gray-800" />
+                  <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-gray-800" />
                </button>
             </div>
             <div className="flex justify-center mt-4">
