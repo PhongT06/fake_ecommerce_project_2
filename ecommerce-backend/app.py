@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, current_app
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
@@ -835,14 +835,31 @@ def home():
 @app.route('/api/seed-products', methods=['POST'])
 def seed_products_route():
    try:
-      with app.app_context():
+      current_app.logger.info("Starting product seeding process")
+      
+      # Get the directory of the current file (app.py)
+      current_dir = os.path.dirname(os.path.abspath(__file__))
+      
+      # Construct the path to product_data.json
+      json_file_path = os.path.join(current_dir, 'product_data.json')
+      
+      current_app.logger.info(f"Looking for product_data.json at: {json_file_path}")
+
+      if not os.path.exists(json_file_path):
+         current_app.logger.error(f"product_data.json not found at {json_file_path}")
+         return jsonify({"error": f"product_data.json not found at {json_file_path}"}), 404
+
+      with current_app.app_context():
          # Clear existing products
          db.session.query(Product).delete()
          db.session.commit()
+         current_app.logger.info("Existing products cleared from database")
 
          # Load product data from JSON file
-         with open('product_data.json', 'r') as f:
+         with open(json_file_path, 'r') as f:
                products_data = json.load(f)
+
+         current_app.logger.info(f"Loaded {len(products_data)} products from JSON")
 
          # Insert products into database
          for product_data in products_data:
@@ -858,20 +875,29 @@ def seed_products_route():
                db.session.add(product)
 
          db.session.commit()
-      return jsonify({"message": "Products seeded successfully"}), 200
+         current_app.logger.info("Products seeded successfully")
+      
+      return jsonify({"message": "Products seeded successfully", "count": len(products_data)}), 200
    except Exception as e:
-      app.logger.error(f"Error seeding products: {str(e)}")
-      app.logger.error(traceback.format_exc())
-      return jsonify({"error": str(e)}), 500
+      current_app.logger.error(f"Error seeding products: {str(e)}")
+      current_app.logger.error(traceback.format_exc())
+      return jsonify({"error": str(e), "trace": traceback.format_exc()}), 500
+
+@app.route('/api/debug/files', methods=['GET'])
+def debug_files():
+   current_dir = os.path.dirname(os.path.abspath(__file__))
+   files = os.listdir(current_dir)
+   return jsonify({"files": files, "current_dir": current_dir})
 
 @app.route('/api/product-count', methods=['GET'])
 def get_product_count():
-   count = Product.query.count()
-   return jsonify({"product_count": count}), 200
-
-@app.route('/api/debug', methods=['GET'])
-def debug_route():
-   return jsonify({"message": "Debug route working"}), 200
+   try:
+      count = Product.query.count()
+      current_app.logger.info(f"Product count: {count}")
+      return jsonify({"product_count": count}), 200
+   except Exception as e:
+      current_app.logger.error(f"Error getting product count: {str(e)}")
+      return jsonify({"error": str(e)}), 500
 
 #### Create database tables ####
 with app.app_context():
