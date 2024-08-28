@@ -17,11 +17,11 @@ function SearchResults() {
       const query = searchParams.get('q');
       const category = searchParams.get('category');
       setSearchQuery(query || '');
+      setSelectedCategory(category || '');
       if (query) {
-         fetchSearchResults(query, category);
-      }
-      if (category) {
-         setSelectedCategory(category);
+         fetchSearchResults(query, category || '');
+      } else {
+         setLoading(false);
       }
    }, [location.search]);
 
