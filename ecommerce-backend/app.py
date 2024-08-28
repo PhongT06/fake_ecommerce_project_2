@@ -810,6 +810,16 @@ def make_first_admin():
 def home():
    return "NeoVerse Market API is running!"
 
+@app.route('/api/seed-products', methods=['POST'])
+def seed_products_route():
+   seed_products()
+   return jsonify({"message": "Products seeded successfully"}), 200
+
+@app.route('/api/product-count', methods=['GET'])
+def get_product_count():
+   count = Product.query.count()
+   return jsonify({"product_count": count}), 200
+
 #### Create database tables ####
 with app.app_context():
    db.create_all()
