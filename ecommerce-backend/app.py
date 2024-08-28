@@ -16,6 +16,7 @@ import stripe
 from functools import wraps
 from flask import abort
 import json
+import traceback
 
 
 # Load environment variables
@@ -833,13 +834,44 @@ def home():
 
 @app.route('/api/seed-products', methods=['POST'])
 def seed_products_route():
-   seed_products()
-   return jsonify({"message": "Products seeded successfully"}), 200
+   try:
+      with app.app_context():
+         # Clear existing products
+         db.session.query(Product).delete()
+         db.session.commit()
+
+         # Load product data from JSON file
+         with open('product_data.json', 'r') as f:
+               products_data = json.load(f)
+
+         # Insert products into database
+         for product_data in products_data:
+               product = Product(
+                  title=product_data['title'],
+                  price=product_data['price'],
+                  description=product_data['description'],
+                  category=product_data['category'],
+                  image=product_data['image'],
+                  rating=product_data['rating']['rate'],
+                  rating_count=product_data['rating']['count']
+               )
+               db.session.add(product)
+
+         db.session.commit()
+      return jsonify({"message": "Products seeded successfully"}), 200
+   except Exception as e:
+      app.logger.error(f"Error seeding products: {str(e)}")
+      app.logger.error(traceback.format_exc())
+      return jsonify({"error": str(e)}), 500
 
 @app.route('/api/product-count', methods=['GET'])
 def get_product_count():
    count = Product.query.count()
    return jsonify({"product_count": count}), 200
+
+@app.route('/api/debug', methods=['GET'])
+def debug_route():
+   return jsonify({"message": "Debug route working"}), 200
 
 #### Create database tables ####
 with app.app_context():
