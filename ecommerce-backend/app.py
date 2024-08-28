@@ -832,6 +832,31 @@ def make_first_admin():
 def home():
    return "NeoVerse Market API is running!"
 
+def seed_products_if_empty():
+   if Product.query.count() == 0:
+      with open('product_data.json') as f:
+         products = json.load(f)
+      
+      for product in products:
+         new_product = Product(
+               title=product['title'],
+               price=product['price'],
+               description=product['description'],
+               category=product['category'],
+               image=product['image'],
+               rating=product['rating']['rate'],
+               rating_count=product['rating']['count']
+         )
+         db.session.add(new_product)
+      
+      db.session.commit()
+      print("Database seeded with initial products.")
+
+@app.before_first_request
+def initialize_database():
+   db.create_all()
+   seed_products_if_empty()
+
 @app.route('/api/seed-products', methods=['POST'])
 def seed_products_route():
    try:
